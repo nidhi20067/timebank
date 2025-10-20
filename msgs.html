@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TimeBank Chat</title>
+<style>
+  :root {
+    --primary: #0077b6;
+    --secondary: #00b4d8;
+    --light: #caf0f8;
+    --dark: #023e8a;
+    --bg: #e0fbfc;
+    --user1: #0077b6;
+    --user2: #48cae4;
+  }
+
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  header {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding: 18px;
+    font-size: 22px;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .chat-container {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 700px;
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 2;
+    margin-top: 20px;
+  }
+
+  .messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .message {
+    max-width: 70%;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-size: 15px;
+    line-height: 1.4;
+    position: relative;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .user1 {
+    align-self: flex-end;
+    background: var(--user1);
+    color: white;
+    border-bottom-right-radius: 5px;
+  }
+
+  .user2 {
+    align-self: flex-start;
+    background: var(--user2);
+    color: #002;
+    border-bottom-left-radius: 5px;
+  }
+
+  .timestamp {
+    font-size: 10px;
+    color: rgba(255,255,255,0.8);
+    position: absolute;
+    bottom: -16px;
+    right: 10px;
+  }
+
+  .input-area {
+    display: flex;
+    background: var(--light);
+    padding: 15px;
+    border-top: 2px solid var(--secondary);
+    gap: 10px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--secondary);
+    border-radius: 25px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  button {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: var(--dark);
+  }
+
+  /* Bubble Background Animation */
+  .bubble {
+    position: absolute;
+    background: rgba(0, 183, 255, 0.25);
+    border-radius: 50%;
+    animation: floatUp 15s infinite;
+    z-index: 1;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(100vh) scale(0.8); opacity: 0.6; }
+    to { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+  <header>💬 TimeBank Chat</header>
+  <div id="bubbles"></div>
+
+  <div class="chat-container">
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="messageInput" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Floating bubbles background
+    const bubblesContainer = document.getElementById("bubbles");
+    for (let i = 0; i < 20; i++) {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.style.width = bubble.style.height = Math.random() * 60 + 20 + "px";
+      bubble.style.left = Math.random() * 100 + "vw";
+      bubble.style.animationDuration = Math.random() * 10 + 10 + "s";
+      bubble.style.animationDelay = Math.random() * 5 + "s";
+      bubblesContainer.appendChild(bubble);
+    }
+
+    const messagesDiv = document.getElementById("messages");
+    const input = document.getElementById("messageInput");
+    let currentUser = "user1"; // Alternates between user1 and user2
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (text === "") return;
+
+      const msg = document.createElement("div");
+      msg.className = `message ${currentUser}`;
+      msg.textContent = text;
+
+      const time = document.createElement("div");
+      time.className = "timestamp";
+      time.textContent = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+      msg.appendChild(time);
+
+      messagesDiv.appendChild(msg);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      input.value = "";
+
+      // Alternate between users to simulate chat
+      currentUser = currentUser === "user1" ? "user2" : "user1";
+    }
+
+    // Allow pressing Enter to send
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
